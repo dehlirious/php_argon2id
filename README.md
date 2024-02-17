@@ -17,6 +17,20 @@ The function's operation is based on an intelligent adaptation to the system's a
 - **Efficiency Across Hardware:** Matches the function's demand with the system's capabilities, ensuring optimal efficiency. This design choice prevents overloading less powerful machines while fully utilizing the capabilities of more robust systems.
 - **Fallback Mechanism:** Defaults to BCRYPT if the memory cost calculation suggests a value below 32MB or if Argon2id is not available, ensuring compatibility across various platforms and configurations.
 
+## Security Insights
+
+For those concerned about the capabilities of attackers, it's noteworthy that as of 2021, cracking software is generally not keeping pace with advancements in hashing algorithms. Particularly, there is no efficient Argon2 cracker available, making it a robust choice against less-powerful adversaries.
+
+### Optimizing Argon2id Parameters
+When configuring Argon2id, the parameter adjustment should follow a specific order to maximize security:
+
+1. **Maximize Memory Usage:** Begin with increasing memory usage as much as possible, starting with a time cost parameter of 1. This makes the hashing process more resistant to brute-force attacks by requiring significant memory resources to attempt cracking.
+
+2. **Increase Parallelism:** Then, increase the parallelism up to the number of cores available on your system. This should be done without reducing the memory usage set in the previous step, leveraging multi-core processors to enhance performance without compromising security.
+
+3. **Adjust Time Cost:** Finally, increase the time cost as much as possible without affecting the previously set parameters. This lengthens the computation time for each hash, further securing against brute-force attempts.
+
+For more in-depth discussions and recommendations on Argon2id parameter selection, refer to discussions on security forums, such as [this detailed thread on Security Stack Exchange](https://security.stackexchange.com/questions/247936/since-gpus-have-gigabytes-of-memory-does-argon2id-need-to-use-gigabytes-of-memo).
 
 ## Features
 - **Dynamic Adjustment:** Automatically scales hashing parameters based on the system's memory_limit setting.

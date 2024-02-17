@@ -17,6 +17,13 @@ The function's operation is based on an intelligent adaptation to the system's a
 - **Efficiency Across Hardware:** Matches the function's demand with the system's capabilities, ensuring optimal efficiency. This design choice prevents overloading less powerful machines while fully utilizing the capabilities of more robust systems.
 - **Fallback Mechanism:** Defaults to BCRYPT if the memory cost calculation suggests a value below 32MB or if Argon2id is not available, ensuring compatibility across various platforms and configurations.
 
+## Features
+- **Dynamic Adjustment:** Automatically scales hashing parameters based on the system's memory_limit setting.
+- **Resource Efficient:** Optimizes for both low-end and high-end systems, ensuring best use of available resources.
+- **Fallback Mechanism:** Defaults to BCRYPT for lower memory configurations or when Argon2id is not available, ensuring wide compatibility.
+- **Enhanced Security:** Offers the potential for stronger security on systems capable of supporting higher resource usage.
+
+
 ## Security Insights
 
 For those concerned about the capabilities of attackers, it's noteworthy that as of 2021, cracking software is generally not keeping pace with advancements in hashing algorithms. Particularly, there is no efficient Argon2 cracker available, making it a robust choice against less-powerful adversaries.
@@ -32,11 +39,13 @@ When configuring Argon2id, the parameter adjustment should follow a specific ord
 
 For more in-depth discussions and recommendations on Argon2id parameter selection, refer to discussions on security forums, such as [this detailed thread on Security Stack Exchange](https://security.stackexchange.com/questions/247936/since-gpus-have-gigabytes-of-memory-does-argon2id-need-to-use-gigabytes-of-memo).
 
-## Features
-- **Dynamic Adjustment:** Automatically scales hashing parameters based on the system's memory_limit setting.
-- **Resource Efficient:** Optimizes for both low-end and high-end systems, ensuring best use of available resources.
-- **Fallback Mechanism:** Defaults to BCRYPT for lower memory configurations or when Argon2id is not available, ensuring wide compatibility.
-- **Enhanced Security:** Offers the potential for stronger security on systems capable of supporting higher resource usage.
+## Additional Considerations
+
+### Memory Factor vs. Password Entropy
+It's important to balance the memory factor with the actual entropy of passwords and the work factor involved in hash generation. For instance, a 20-character password combined with a hash generation time of 1 second significantly reduces the feasibility of brute-forcing to nearly impossible levels. Therefore, a large memory factor becomes critical primarily when the risk of brute-forcing is elevated, and you aim to decrease this risk by 1-3 orders of magnitude. The decision on the acceptable values for memory, time, and parallelism factors should be carefully calculated based on your specific security needs and the potential risk scenario.
+
+### Choosing Argon2id Over PBKDF2
+The preference for Argon2id over older algorithms like PBKDF2 isn't arbitrary. One of the key advantages of Argon2id lies in its enhanced resistance to side-channel attacks. This attribute makes Argon2id a more secure choice in environments where the risk of such attacks is a concern. The algorithm's design to effectively utilize multiple system resources (memory, CPU) further aids in its ability to provide a robust defense against a wide range of attack vectors, including those that PBKDF2 is more susceptible to.
 
 ## Why Use This?
 If you're developing web applications that require user authentication, this library offers an adaptive, secure, and efficient solution for password hashing. It's particularly beneficial in environments where system resources vary or are constrained. By intelligently adjusting its operations based on available resources, it provides an optimal balance between security and performance.

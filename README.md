@@ -5,10 +5,6 @@
 ## Description
 This is designed to dynamically adjust hashing parameters, including memory usage and computational complexity, based on the available system resources. This approach ensures that applications can offer the highest level of security without overburdening the system, making it ideal for a wide range of deployment environments, from shared hosting to high-end servers.
 
-By default, the maximum ram usage is 384mb (128mb * 3)
-
-You can modify this by changing this `min($availableMemoryKiB, $MemoryCostDefault * 3)`
-
 ## How It Works
 The function's operation is based on an intelligent adaptation to the system's available memory:
 - **Baseline Memory Usage:** Starts at 128MB, with the potential to increase up to three times, maxing at 384MB for password hashing operations. This adaptive use of resources ensures maximum efficiency without exceeding practical limits. (but if you want to throw 2gb at it, go ahead!)
@@ -23,19 +19,26 @@ The function's operation is based on an intelligent adaptation to the system's a
 - **Fallback Mechanism:** Defaults to BCRYPT for lower memory configurations or when Argon2id is not available, ensuring wide compatibility.
 - **Enhanced Security:** Offers the potential for stronger security on systems capable of supporting higher resource usage.
 
-## Configuring the `hashPassword` Function
+## Explanation of Parameters
+The `hashPassword` function offers flexibility, allowing customization to suit the specific requirements of your application. Below is an overview of the configurable parameters and their impact on the hashing process:
 
-The `hashPassword` function offers flexibility, allowing customization to suit the specific requirements of your application. Below is an overview of the configurable parameters and recommendations for adjusting them for different use cases.
+- **defaultMemory:** Initial memory allocation for hashing, defaulting to 128MB. This parameter determines the amount of memory allocated for the hashing process, impacting both performance and security.
+- **maxMemory:** Maximum memory allocation for hashing, defaulted to 384MB. This parameter sets the upper limit for memory usage during hashing, balancing security with resource consumption.
+- **defaultThreads:** Default number of threads used in hashing, set to 4. Threads affect the parallelism of the hashing process, influencing performance on multi-core systems.
+- **maxThreads:** Maximum number of threads for hashing, capped at 8. This parameter limits the concurrency of the hashing process to prevent resource exhaustion.
+- **defaultIterations:** Default number of hashing iterations, starting at 4. Iterations determine the computational complexity of the hashing process, impacting security.
+- **maxIterations:** Maximum number of hashing iterations, up to 6. Increasing iterations enhances security but may also prolong execution time.
+- **memoryCutoff:** Memory usage threshold for algorithm switch, set at 32MB. This parameter defines the point at which the function switches to a fallback hashing algorithm for compatibility and resource efficiency.
 
-### Parameters:
+## Performance Considerations
+Adjusting hashing parameters, such as memory usage and iteration counts, can have significant performance implications. Here are some insights to consider when configuring the function for your applications:
 
-- **defaultMemory:** Initial memory allocation for hashing, defaulting to 128MB.
-- **maxMemory:** Maximum memory allocation for hashing, defaulted to 384MB.
-- **defaultThreads:** Default number of threads used in hashing, set to 4.
-- **maxThreads:** Maximum number of threads for hashing, capped at 8.
-- **defaultIterations:** Default number of hashing iterations, starting at 4.
-- **maxIterations:** Maximum number of hashing iterations, up to 6.
-- **memoryCutoff:** Memory usage threshold for algorithm switch, set at 32MB.
+- **Memory Usage:** Increasing the memory allocation (`defaultMemory` and `maxMemory`) can improve performance by allowing the hashing process to utilize more resources efficiently. However, excessive memory usage may lead to resource contention and performance degradation on shared hosting environments.
+- **Iteration Counts:** Higher iteration counts (`iterations` and `maxIterations`) enhance security by increasing the computational complexity of the hashing process. However, this comes at the cost of increased execution time, particularly on systems with limited computational resources.
+- **Threads:** Adjusting the number of threads (`defaultThreads` and `maxThreads`) can impact performance by influencing parallelism and concurrency in the hashing process. More threads can accelerate hashing but may also consume additional CPU resources and introduce overhead in thread management.
+
+Consider your application's requirements and the available system resources when adjusting hashing parameters to strike a balance between security and performance.
+
 
 ### Use Case Examples:
 
@@ -112,6 +115,23 @@ For benchmark results demonstrating the impact of increasing bcrypt cost factors
 
 - **Practical Considerations:** Ensure the parameters do not exceed the system resources (RAM, CPU cores) or make the hashing process too slow for user experience.
 
+## Security Considerations
+
+When implementing password hashing in your applications, it's crucial to adhere to security best practices to safeguard user credentials. Here are some essential considerations:
+
+- **Use a Strong Hashing Algorithm:** Choose a secure and proven hashing algorithm like Argon2 or bcrypt. These algorithms are specifically designed for password hashing and offer resistance against brute-force and dictionary attacks.
+
+- **Salting Passwords:** Always use a unique salt for each password before hashing. Salting adds random data to each password, making it more difficult for attackers to use precomputed tables (rainbow tables) for cracking passwords.
+
+- **Secure Storage:** Ensure that hashed passwords are stored securely in your database. Implement proper access controls and encryption mechanisms to protect the password database from unauthorized access.
+
+- **Authentication System Integration:** Integrate the hashed passwords into your authentication system securely. Implement strong password policies, multi-factor authentication, and session management to enhance overall security.
+
+- **Regularly Update Password Hashing Parameters:** Periodically review and update the hashing parameters (such as memory usage, iteration counts, and thread counts) based on evolving security requirements and system capabilities.
+
+By following these security best practices, you can significantly improve the security of your application's authentication system and protect user passwords from unauthorized access.
+
+
 ## To-Do
 - Implement dynamic cost for BCRYPT.
 - Test function compatibility and performance across different PHP versions and environments
@@ -120,9 +140,20 @@ For benchmark results demonstrating the impact of increasing bcrypt cost factors
 - Change the calculation of determining thread/iteration count. These two do not effect memory consumption yet are based off memory.
 
 ## Why Use This?
-If you're developing web applications that require user authentication, this library offers an adaptive, secure, and efficient solution for password hashing. It's particularly beneficial in environments where system resources vary or are constrained. By intelligently adjusting its operations based on available resources, it provides an optimal balance between security and performance.
+
+In the realm of web application development, robust user authentication is paramount to safeguarding sensitive user data. This library offers a compelling solution for password hashing, designed to adapt dynamically to varying system resources while maintaining stringent security measures. Here's why you should consider using this library:
+
+- **Adaptive Security:** With the ability to dynamically adjust hashing parameters based on available system resources, this library ensures that your application's security remains resilient across different environments.
+
+- **Efficient Resource Utilization:** By intelligently optimizing its operations, this library strikes a balance between security and performance, making it ideal for applications operating in resource-constrained environments or with fluctuating resource availability.
+
+- **Ease of Integration:** Integrating this library into your web application is straightforward, providing a hassle-free solution for implementing robust password hashing functionality.
+
+- **Future-Proof Security:** The library incorporates industry-standard hashing algorithms like Argon2 and bcrypt, ensuring that your application remains resilient against evolving security threats and vulnerabilities.
+
+By leveraging the adaptive, secure, and efficient features of this library, you can enhance the security posture of your web applications while delivering a seamless user experience.
 
 ## Contribution
-Contributions are welcome! Whether you're fixing bugs, improving the documentation, or adding new features, your help is appreciated to make this library even better.
+Contributions are welcome! Whether you're fixing bugs, improving the documentation, or adding new features, your help is appreciated to make this project even better.
 
-Thank you for considering [Adaptive Security: Dynamic Hashing Based on System Resources] for your password hashing needs. Together, we can make web applications more secure and efficient.
+Together, we can make web applications more secure and efficient.

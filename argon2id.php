@@ -137,7 +137,7 @@ function rehashPassword($password, $hashedPassword, $preferredAlgorithm, $al_opt
  *     - maxThreads: Maximum number of threads (default: 8)
  *     - iterations: Default number of iterations (default: 4) // Updated key here
  *     - maxIterations: Maximum number of iterations (default: 6)
- *     - memoryCutoff: Memory cutoff for algorithm switch (default: 32 MB)
+ *     - memoryCutoff: Memory cutoff for algorithm switch (default: 24 MB)
  *     - debug: Debug mode flag (default: false)
  * @return string The hashed password.
  * @throws InvalidArgumentException If the password is empty or not a string.
@@ -157,7 +157,7 @@ function hashPassword($password, $options = []) {
         'maxThreads' => 8, // Max threads
         'iterations' => 4, // Default iterations
         'maxIterations' => 6, // Max iterations
-        'memoryCutoff' => 32 * 1024, // Memory cutoff for algorithm switch (32MB)
+        'memoryCutoff' => 24 * 1024, // Memory cutoff for algorithm switch (24MB)
         'debug' => false, // Debug mode flag
     ], $options);
     
@@ -172,7 +172,7 @@ function hashPassword($password, $options = []) {
     $memoryLimitBytes = memoryLimitToBytes($memoryLimit);
 
     // Calculate available memory with safety buffer
-    $usedMemory = max((function_exists('memory_get_usage') ? memory_get_usage() : 0), (function_exists('memory_get_peak_usage') ? memory_get_peak_usage(false) : 0));
+    $usedMemory = max((function_exists('memory_get_usage') ? memory_get_usage(true) : 0), (function_exists('memory_get_peak_usage') ? memory_get_peak_usage(true) : 0));
     $availableMemory = $memoryLimitBytes - $usedMemory;
 
     // Convert to KiB for Argon2 and adjust memory cost within the allowed range, ensuring a safety buffer

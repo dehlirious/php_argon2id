@@ -138,6 +138,7 @@ By following these security best practices, you can significantly improve the se
 - Implement logging for debug information instead of echoing directly
 - Profile and optimize critical sections of the code for better performance
 - Change the calculation of determining thread/iteration count. These two do not effect memory consumption yet are based off memory.
+- Create a 'verifyAndRehashPassword' function that replaces usage of password_verify, to call password_needs_rehash to determine whether or not rehashPassword needs to be called, then calling password_verify and returning the result.
 
 ## Why Use This?
 

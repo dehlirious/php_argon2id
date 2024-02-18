@@ -112,7 +112,12 @@ For benchmark results demonstrating the impact of increasing bcrypt cost factors
 
 - **Practical Considerations:** Ensure the parameters do not exceed the system resources (RAM, CPU cores) or make the hashing process too slow for user experience.
 
-
+## To-Do
+- Implement dynamic cost for BCRYPT.
+- Test function compatibility and performance across different PHP versions and environments
+- Implement logging for debug information instead of echoing directly
+- Profile and optimize critical sections of the code for better performance
+- Change the calculation of determining thread/iteration count. These two do not effect memory consumption yet are based off memory.
 
 ## Why Use This?
 If you're developing web applications that require user authentication, this library offers an adaptive, secure, and efficient solution for password hashing. It's particularly beneficial in environments where system resources vary or are constrained. By intelligently adjusting its operations based on available resources, it provides an optimal balance between security and performance.

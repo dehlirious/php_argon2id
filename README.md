@@ -49,7 +49,7 @@ The function's operation is based on an intelligent adaptation to the system's a
 - **Adaptive Scaling:** Begins with 4 threads and 4 iterations, scaling up to 6 iterations and 8 threads for systems that can allocate 384MB of RAM to the hashing process. This decision balances execution time with security, finding no significant benefit beyond the 384MB threshold nor the 8 thread threshold.
 - **Execution Time:** Varies with the configuration and computing power, from 482ms at the highest setting (384MB RAM, 6 iterations, 8 threads) to 100ms at the baseline (128MB RAM, 4 iterations, 4 threads). For 200MB of available RAM, the function maintains 4 iterations and 4 threads, resulting in a 168ms execution time.
 - **Efficiency Across Hardware:** Matches the function's demand with the system's capabilities, ensuring optimal efficiency. This design choice prevents overloading less powerful machines while fully utilizing the capabilities of more robust systems.
-- **Fallback Mechanism:** Defaults to BCRYPT if the memory cost calculation suggests a value below 32MB or if Argon2id is not available, ensuring compatibility across various platforms and configurations.
+- **Fallback Mechanism:** Defaults to BCRYPT if the memory cost calculation suggests a value below 24MB or if Argon2id is not available, ensuring compatibility across various platforms and configurations.
 
 ## Features
 - **Dynamic Adjustment:** Automatically scales hashing parameters based on the system's memory_limit setting.
@@ -66,14 +66,14 @@ The `hashPassword` function offers flexibility, allowing customization to suit t
 - **maxThreads:** Maximum number of threads for hashing, capped at 8. This parameter limits the concurrency of the hashing process to prevent resource exhaustion.
 - **defaultIterations:** Default number of hashing iterations, starting at 4. Iterations determine the computational complexity of the hashing process, impacting security.
 - **maxIterations:** Maximum number of hashing iterations, up to 6. Increasing iterations enhances security but may also prolong execution time.
-- **memoryCutoff:** Memory usage threshold for algorithm switch, set at 32MB. This parameter defines the point at which the function switches to a fallback hashing algorithm for compatibility and resource efficiency.
+- **memoryCutoff:** Memory usage threshold for algorithm switch, set at 24MB. This parameter defines the point at which the function switches to a fallback hashing algorithm for compatibility and resource efficiency.
 
 ## Performance Considerations
 Adjusting hashing parameters, such as memory usage and iteration counts, can have significant performance implications. Here are some insights to consider when configuring the function for your applications:
 
 - **Memory Usage:** Increasing the memory allocation (`defaultMemory` and `maxMemory`) can improve performance by allowing the hashing process to utilize more resources efficiently. However, excessive memory usage may lead to resource contention and performance degradation on shared hosting environments.
 - **Iteration Counts:** Higher iteration counts (`iterations` and `maxIterations`) enhance security by increasing the computational complexity of the hashing process. However, this comes at the cost of increased execution time, particularly on systems with limited computational resources.
-- **Threads:** Adjusting the number of threads (`defaultThreads` and `maxThreads`) can impact performance by influencing parallelism and concurrency in the hashing process. More threads can accelerate hashing but may also consume additional CPU resources and introduce overhead in thread management.
+- **Threads:** Adjusting the number of threads (`threads` and `maxThreads`) can impact performance by influencing parallelism and concurrency in the hashing process. More threads can accelerate hashing but may also consume additional CPU resources and introduce overhead in thread management.
 
 Consider your application's requirements and the available system resources when adjusting hashing parameters to strike a balance between security and performance.
 

@@ -36,6 +36,94 @@ function memoryLimitToBytes($val) {
 }
 
 /**
+ * Determine the preferred hashing algorithm based on memory cost and availability.
+ *
+ * @param int $memoryCost The memory cost in kilobytes.
+ * @param int $memoryCutoff The optional memory cutoff in kilobytes.
+ * @return int The preferred hashing algorithm constant.
+ */
+function determinePreferredAlgorithm($memoryCost = null, $memoryCutoff = null) {
+    // Define the default preferred algorithm
+    $preferredAlgorithm = PASSWORD_DEFAULT;
+
+    // Check if the memory cutoff is provided
+    if ($memoryCutoff !== null && $memoryCost !== null) {
+        // Check if the memory cost exceeds the memory cutoff and if Argon2id is available
+        if ($memoryCost >= $memoryCutoff && defined('PASSWORD_ARGON2ID')) {
+            $preferredAlgorithm = PASSWORD_ARGON2ID;
+        } 
+        // Check if the memory cost exceeds the memory cutoff and if Argon2i is available
+        elseif ($memoryCost >= $memoryCutoff && defined('PASSWORD_ARGON2I')) {
+            $preferredAlgorithm = PASSWORD_ARGON2I;
+        } 
+        // Fallback to BCRYPT if neither Argon2id nor Argon2i are available
+        elseif (defined('PASSWORD_BCRYPT')) {
+            $preferredAlgorithm = PASSWORD_BCRYPT;
+        }
+    } else {
+        // If memory cutoff is not provided, check if any of the algorithms are defined
+        if (defined('PASSWORD_ARGON2ID')) {
+            $preferredAlgorithm = PASSWORD_ARGON2ID;
+        } elseif (defined('PASSWORD_ARGON2I')) {
+            $preferredAlgorithm = PASSWORD_ARGON2I;
+        } elseif (defined('PASSWORD_BCRYPT')) {
+            $preferredAlgorithm = PASSWORD_BCRYPT;
+        }
+    }
+
+    return $preferredAlgorithm;
+}
+
+/**
+ * Generate algorithm options for Argon2 hashing based on provided parameters.
+ *
+ * @param int|null $memoryCost The memory cost in kilobytes.
+ * @param int|null $iterations The number of iterations.
+ * @param int|null $threads The number of threads.
+ * @param int $preferredAlgorithm The preferred hashing algorithm constant.
+ * @return array The algorithm options for Argon2 hashing.
+ */
+function generateArgon2Options($memoryCost = null, $iterations = null, $threads = null, $preferredAlgorithm) {
+    // Initialize algorithm options array
+    $al_options = [];
+    
+    // Check if the preferred algorithm is Argon2 and if memory cost, iterations, and threads are defined
+    if (($preferredAlgorithm === PASSWORD_ARGON2ID || $preferredAlgorithm === PASSWORD_ARGON2I) &&
+        isset($memoryCost, $iterations, $threads)) {
+        // Ensure memory cost does not exceed the available memory and the default memory cost multiplied by 3 for security
+        $al_options = ['memory_cost' => $memoryCost, 'time_cost' => $iterations, 'threads' => $threads];
+    }
+    
+    return $al_options;
+}
+
+/**
+ * Rehash the password using the preferred algorithm and options if necessary.
+ *
+ * @param string $password The password to hash.
+ * @param string $hashedPassword The previously hashed password.
+ * @param int $preferredAlgorithm The preferred hashing algorithm constant.
+ * @param array $al_options The algorithm options.
+ * @return string The rehashed password, or the original hashed password if no rehash is required.
+ */
+function rehashPassword($password, $hashedPassword, $preferredAlgorithm, $al_options) {
+    // Check if password needs rehashing
+    if (password_needs_rehash($hashedPassword, $preferredAlgorithm, $al_options)) {
+        // Rehash the password using the preferred algorithm and options
+        for ($i = 0; $i < 5; $i++) {
+            $hashedPassword = password_hash($password, $preferredAlgorithm, $al_options);
+            if ($i >= 4) {
+                // Limit iterations to 5 to avoid endless loops
+                break;
+            }
+        }
+    }
+    return $hashedPassword;
+}
+
+
+
+/**
  * Hashes a password using a secure algorithm and configurable options.
  *
  * This function securely hashes a password using bcrypt or Argon2, with options to control memory usage, iterations, and threads.
@@ -92,15 +180,7 @@ function hashPassword($password, $options = []) {
     $memoryCost = min($availableMemoryKiB, $defaultMemory); // Adjust memory cost based on available memory
 
     // Define the preferred algorithm based on memory cost & availability
-    $preferredAlgorithm = PASSWORD_DEFAULT;
-    
-    if ($memoryCost >= $memoryCutoff && defined('PASSWORD_ARGON2ID')) { // If memory cost is 32MB or more and ARGON2ID is available
-        $preferredAlgorithm = PASSWORD_ARGON2ID;
-    } elseif ($memoryCost >= $memoryCutoff && defined('PASSWORD_ARGON2I')) { // Fallback to ARGON2I if ARGON2ID is not available
-        $preferredAlgorithm = PASSWORD_ARGON2I;
-    } elseif(defined('PASSWORD_BCRYPT')) {
-        $preferredAlgorithm = PASSWORD_BCRYPT;
-    }
+    $preferredAlgorithm = determinePreferredAlgorithm($memoryCost, $memoryCutoff);
 
     // Adjust memory cost based on available memory
     for (;$memoryCost < ($availableMemoryKiB * 0.75) && $iterations < $maxIterations; ++$iterations);
@@ -109,11 +189,7 @@ function hashPassword($password, $options = []) {
     $memoryCost = min($availableMemoryKiB, $defaultMemory * $maxMemoryMultiplier);
 
     // Define the options array based on the preferred algorithm
-    $al_options = [];
-    if ($preferredAlgorithm === PASSWORD_ARGON2ID || $preferredAlgorithm === PASSWORD_ARGON2I) {
-        // Ensure memory cost does not exceed the available memory and the default memory cost multiplied by 3 for security
-        $al_options = ['memory_cost' => $memoryCost, 'time_cost' => $iterations, 'threads' => $threads];
-    }
+	$al_options = generateArgon2Options($memoryCost, $iterations, $threads, $preferredAlgorithm);
     
     // Hash the password using bcrypt or Argon2
     $hashedPassword = password_hash($password, $preferredAlgorithm, $al_options);
@@ -123,11 +199,7 @@ function hashPassword($password, $options = []) {
     *  The password rehashing is typically performed upon user sign-in using password_verify(). 
     *  This code has been added for thoroughness and as a safeguard measure. 
     */
-    for ($i = 0; password_needs_rehash($hashedPassword, $preferredAlgorithm, $al_options); $i++) {
-        $hashedPassword = password_hash($password, $preferredAlgorithm, $al_options);
-        if ($i >= 5) break; // only allow 5 iterations to avoid endless loops
-    }
-
+    $hashedPassword = rehashPassword($password, $hashedPassword, $preferredAlgorithm, $al_options);
     
     if ($hashedPassword === false) {
         throw new RuntimeException('Failed to hash password.');

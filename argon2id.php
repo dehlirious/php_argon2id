@@ -83,7 +83,7 @@ function determinePreferredAlgorithm($memoryCost = null, $memoryCutoff = null) {
  * @param int $preferredAlgorithm The preferred hashing algorithm constant.
  * @return array The algorithm options for Argon2 hashing.
  */
-function generateArgon2Options($memoryCost = null, $iterations = null, $threads = null, $preferredAlgorithm) {
+function generateArgon2Options($preferredAlgorithm, $memoryCost = null, $iterations = null, $threads = null) {
     // Initialize algorithm options array
     $al_options = [];
     
@@ -189,7 +189,7 @@ function hashPassword($password, $options = []) {
     $memoryCost = min($availableMemoryKiB, $defaultMemory * $maxMemoryMultiplier);
 
     // Define the options array based on the preferred algorithm
-	$al_options = generateArgon2Options($memoryCost, $iterations, $threads, $preferredAlgorithm);
+	$al_options = generateArgon2Options($preferredAlgorithm, $memoryCost, $iterations, $threads);
     
     // Hash the password using bcrypt or Argon2
     $hashedPassword = password_hash($password, $preferredAlgorithm, $al_options);

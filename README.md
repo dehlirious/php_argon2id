@@ -34,8 +34,8 @@
     <a href="https://buymeacoffee.com/devsir">
         <img src="https://badgen.net/badge/icon/buymeacoffee?icon=buymeacoffee&label" alt="Buymeacoffee" />
     </a>
+    <img src="https://sonarcloud.io/api/project_badges/measure?project=dehlirious_php_argon2id&metric=security_rating" alt="SonarCloud" />
 </p>
-
 
 
 

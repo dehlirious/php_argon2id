@@ -1,6 +1,44 @@
 # [Adaptive Security: Dynamic Hashing Based on System Resources]
-![GitHub Stars](https://img.shields.io/github/stars/dehlirious/php_argon2id)
-![GitHub Issues](https://img.shields.io/github/issues/dehlirious/php_argon2id)
+
+<p align="center">
+    <a href="https://badgen.net/github/commits/dehlirious/php_argon2id">
+        <img src="https://badgen.net/github/commits/dehlirious/php_argon2id" alt="GitHub commits" />
+    </a>
+    <a href="https://GitHub.com/dehlirious/php_argon2id/stargazers/">
+        <img src="https://badgen.net/github/stars/dehlirious/php_argon2id" alt="GitHub stars" />
+    </a>
+    <a href="https://GitHub.com/dehlirious/php_argon2id/network/">
+        <img src="https://badgen.net/github/forks/dehlirious/php_argon2id/" alt="GitHub forks" />
+    </a>
+    <a href="https://GitHub.com/dehlirious/php_argon2id/watchers/">
+        <img src="https://badgen.net/github/watchers/dehlirious/php_argon2id/" alt="GitHub watchers" />
+    </a>
+    <a href="https://GitHub.com/dehlirious/php_argon2id/pull/">
+        <img src="https://badgen.net/github/prs/dehlirious/php_argon2id" alt="GitHub total pull requests" />
+    </a>
+    <a href="https://github.com/dehlirious/php_argon2id/issues">
+        <img src="https://badgen.net/github/issues/dehlirious/php_argon2id" alt="GitHub issues" />
+    </a>
+    <a href="http://isitmaintained.com/project/dehlirious/php_argon2id">
+        <img src="http://isitmaintained.com/badge/open/dehlirious/php_argon2id.svg" alt="Percentage of issues still open" />
+    </a>
+    <!-- Releases and Downloads -->
+    <a href="https://github.com/dehlirious/php_argon2id/releases">
+        <img src="https://img.shields.io/github/downloads/dehlirious/php_argon2id/total.svg" alt="GitHub downloads" />
+    </a>
+    <a href="https://github.com/dehlirious/php_argon2id/releases">
+        <img src="https://badgen.net/github/releases/dehlirious/php_argon2id" alt="GitHub release" />
+    </a>
+    <br/>
+    <!-- Support -->
+    <a href="https://buymeacoffee.com/devsir">
+        <img src="https://badgen.net/badge/icon/buymeacoffee?icon=buymeacoffee&label" alt="Buymeacoffee" />
+    </a>
+</p>
+
+
+
+
 
 ## Description
 This is designed to dynamically adjust hashing parameters, including memory usage and computational complexity, based on the available system resources. This approach ensures that applications can offer the highest level of security without overburdening the system, making it ideal for a wide range of deployment environments, from shared hosting to high-end servers.
